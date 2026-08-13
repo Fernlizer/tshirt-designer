@@ -11,6 +11,14 @@ A web-based T-shirt design tool that lets you create custom designs with drag-an
 - ✏️ **Text Tool** - Add custom text with font options
 - 🧍 **Mockup Preview** - Generate mockup on a T-shirt template
 - 💾 **Save/Load** - Projects persist in SQLite database
+- 👔 **Garment Templates** - Design on realistic Classic Tee, Oversized Tee, and Hoodie front/back templates
+- 📐 **Alignment Guides** - Use the full-garment grid, center horizontally without changing height, or center within the safe print area
+
+## Alignment controls
+
+The design canvas includes a full-garment grid for checking placement. Choose **Center horizontally** to correct only left/right alignment while preserving the layer's vertical position, or choose **Center in print area** to reset the layer to the exact print-area center.
+
+![Hoodie alignment controls](docs/alignment-controls-example.png)
 
 ## Tech Stack
 

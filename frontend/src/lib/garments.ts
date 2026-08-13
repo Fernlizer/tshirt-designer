@@ -10,6 +10,8 @@ export interface GarmentDefinition {
   previewPath: string;
   collarPath: string;
   printArea: { x: number; y: number; width: number; height: number };
+  /** Alignment guides can cover more of the garment than the safe print area. */
+  gridArea: { x: number; y: number; width: number; height: number };
   templates?: { front: string; back: string };
 }
 
@@ -24,6 +26,7 @@ export const GARMENTS: Record<GarmentType, GarmentDefinition> = {
     // Deliberately generous: artwork can reach the upper chest and extend toward
     // the side seams without crossing the collar, sleeves, or bottom hem.
     printArea: { x: 190, y: 195, width: 260, height: 340 },
+    gridArea: { x: 155, y: 135, width: 330, height: 440 },
     templates: {
       front: '/garments/templates/tshirt-front-v1.png',
       back: '/garments/templates/tshirt-back-v1.png',
@@ -37,6 +40,7 @@ export const GARMENTS: Record<GarmentType, GarmentDefinition> = {
     previewPath: 'M 190 112 L 104 141 L 30 190 L 77 382 L 178 340 L 178 680 L 462 680 L 462 340 L 563 382 L 610 190 L 536 141 L 450 112 L 386 95 C 369 135 348 153 320 153 C 292 153 271 135 254 95 Z',
     collarPath: 'M 253 107 C 268 145 289 166 320 166 C 351 166 372 145 387 107 C 368 128 346 137 320 137 C 294 137 272 128 253 107 Z',
     printArea: { x: 185, y: 220, width: 270, height: 260 },
+    gridArea: { x: 145, y: 120, width: 350, height: 510 },
     templates: {
       front: '/garments/templates/oversized-front-v1.png',
       back: '/garments/templates/oversized-back-v1.png',
@@ -51,6 +55,7 @@ export const GARMENTS: Record<GarmentType, GarmentDefinition> = {
     collarPath: 'M 238 76 C 250 144 278 181 320 181 C 362 181 390 144 402 76 C 371 102 352 114 320 114 C 288 114 269 102 238 76 Z',
     // Keep artwork on the clear chest panel: below the hood and above the pocket.
     printArea: { x: 195, y: 215, width: 250, height: 185 },
+    gridArea: { x: 155, y: 110, width: 330, height: 500 },
     templates: {
       front: '/garments/templates/hoodie-front-v1.png',
       back: '/garments/templates/hoodie-back-v1.png',
@@ -70,6 +75,14 @@ export const getPhotoTemplate = (type: GarmentType, side: 'front' | 'back'): str
 /** The photo template is rendered into a 500 × 600 Fabric canvas. */
 export const getEditorPrintArea = (type: GarmentType) => {
   const area = GARMENTS[type].printArea;
+  return scaleAreaToEditor(area);
+};
+
+/** Wider garment coverage used only for non-exported alignment guides. */
+export const getEditorGridArea = (type: GarmentType) =>
+  scaleAreaToEditor(GARMENTS[type].gridArea);
+
+const scaleAreaToEditor = (area: GarmentDefinition['printArea']) => {
   return {
     x: area.x * (500 / 640),
     y: area.y * (600 / 720),

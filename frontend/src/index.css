@@ -592,6 +592,7 @@ body {
 }
 
 .guide-toggle,
+.guide-center-x,
 .guide-center,
 .guide-delete {
   min-height: 2rem;
@@ -605,6 +606,7 @@ body {
 }
 
 .guide-toggle.is-active,
+.guide-center-x:hover,
 .guide-center:hover {
   border-color: var(--color-focus);
   background: oklch(25% 0.07 250);

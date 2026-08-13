@@ -1,14 +1,14 @@
 import { useRef, useEffect, useCallback } from 'react';
 import * as fabric from 'fabric';
 import { useEditorStore, type Side } from '../stores/editorStore';
-import { getEditorPrintArea, getPhotoTemplate } from '../lib/garments';
+import { getEditorGridArea, getPhotoTemplate } from '../lib/garments';
 import { getTintedTemplate } from '../lib/garmentTemplate';
 
 const CANVAS_WIDTH = 500;
 const CANVAS_HEIGHT = 600;
 
 const createGridGuides = (visible: boolean): fabric.FabricObject[] => {
-  const { x, y, width, height } = getEditorPrintArea(useEditorStore.getState().garmentType);
+  const { x, y, width, height } = getEditorGridArea(useEditorStore.getState().garmentType);
   const guides: fabric.FabricObject[] = [
     new fabric.Rect({
       left: x,

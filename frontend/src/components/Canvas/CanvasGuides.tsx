@@ -7,14 +7,39 @@ export default function CanvasGuides() {
   const { showGrid, setShowGrid, getActiveCanvas, garmentType } = useEditorStore();
   const [notice, setNotice] = useState('');
 
-  const handleCenter = useCallback(() => {
+  const getSelectedLayer = useCallback(() => {
     const canvas = getActiveCanvas();
     const selected = canvas?.getActiveObject();
     if (!canvas || !selected) {
       setNotice('Select an image or text layer first.');
-      return;
+      return null;
     }
 
+    return { canvas, selected };
+  }, [getActiveCanvas]);
+
+  const handleCenterHorizontally = useCallback(() => {
+    const selection = getSelectedLayer();
+    if (!selection) return;
+
+    const { canvas, selected } = selection;
+    const area = getEditorPrintArea(garmentType);
+    const currentCenter = selected.getCenterPoint();
+    selected.setPositionByOrigin(
+      new fabric.Point(area.x + area.width / 2, currentCenter.y),
+      'center',
+      'center',
+    );
+    selected.setCoords();
+    canvas.requestRenderAll();
+    setNotice('Centered horizontally; vertical position unchanged.');
+  }, [garmentType, getSelectedLayer]);
+
+  const handleCenter = useCallback(() => {
+    const selection = getSelectedLayer();
+    if (!selection) return;
+
+    const { canvas, selected } = selection;
     const area = getEditorPrintArea(garmentType);
     selected.set({ angle: 0 });
     selected.setPositionByOrigin(
@@ -25,7 +50,7 @@ export default function CanvasGuides() {
     selected.setCoords();
     canvas.requestRenderAll();
     setNotice('Centered and straightened in the print area.');
-  }, [garmentType, getActiveCanvas]);
+  }, [garmentType, getSelectedLayer]);
 
   const handleDelete = useCallback(() => {
     const canvas = getActiveCanvas();
@@ -52,8 +77,11 @@ export default function CanvasGuides() {
       >
         # Grid {showGrid ? 'on' : 'off'}
       </button>
+      <button type="button" className="guide-center-x" onClick={handleCenterHorizontally}>
+        ↔ Center horizontally
+      </button>
       <button type="button" className="guide-center" onClick={handleCenter}>
-        ◎ Center selected
+        ◎ Center in print area
       </button>
       <button type="button" className="guide-delete" onClick={handleDelete}>
         🗑 Delete selected
