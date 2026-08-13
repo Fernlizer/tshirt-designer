@@ -60,7 +60,7 @@ export function useCanvas(side: Side) {
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const templateRef = useRef<fabric.FabricImage | null>(null);
   const gridRef = useRef<fabric.FabricObject[]>([]);
-  const { setFrontCanvas, setBackCanvas, tshirtColor, showGrid } = useEditorStore();
+  const { setFrontCanvas, setBackCanvas, tshirtColor, garmentType, showGrid } = useEditorStore();
 
   // Initialize canvas
   useEffect(() => {
@@ -120,6 +120,19 @@ export function useCanvas(side: Side) {
 
   useEffect(() => {
     const canvas = fabricRef.current;
+    if (!canvas) return;
+
+    // The printable chest area changes with the garment silhouette. Rebuild only
+    // the non-exported guides, leaving the customer's artwork in place.
+    gridRef.current.forEach((guide) => canvas.remove(guide));
+    gridRef.current = createGridGuides(showGrid);
+    gridRef.current.forEach((guide) => canvas.add(guide));
+    gridRef.current.forEach((guide) => canvas.bringObjectToFront(guide));
+    canvas.renderAll();
+  }, [garmentType]);
+
+  useEffect(() => {
+    const canvas = fabricRef.current;
     const template = templateRef.current;
     if (!canvas || !template) return;
     const templateUrl = getPhotoTemplate(useEditorStore.getState().garmentType, side);
@@ -128,10 +141,16 @@ export function useCanvas(side: Side) {
     void getTintedTemplate(templateUrl, tshirtColor).then(async (tintedUrl) => {
       if (cancelled) return;
       await template.setSrc(tintedUrl);
-      if (!cancelled) canvas.renderAll();
+      if (!cancelled) {
+        template.set({
+          scaleX: CANVAS_WIDTH / (template.width || CANVAS_WIDTH),
+          scaleY: CANVAS_HEIGHT / (template.height || CANVAS_HEIGHT),
+        });
+        canvas.renderAll();
+      }
     });
     return () => { cancelled = true; };
-  }, [side, tshirtColor]);
+  }, [side, tshirtColor, garmentType]);
 
   const addImage = useCallback(async (imageUrl: string) => {
     const canvas = fabricRef.current;

@@ -32,11 +32,15 @@ export const GARMENTS: Record<GarmentType, GarmentDefinition> = {
   oversized: {
     id: 'oversized',
     label: 'Oversized Tee',
-    description: 'Dropped shoulder · relaxed body',
+    description: 'Dropped shoulder · boxy half sleeve',
     editorPath: 'M 118 88 L 65 120 L 18 155 L 55 285 L 130 250 L 130 540 L 370 540 L 370 250 L 445 285 L 482 155 L 435 120 L 382 88 L 315 58 L 250 85 L 185 58 Z',
     previewPath: 'M 190 112 L 104 141 L 30 190 L 77 382 L 178 340 L 178 680 L 462 680 L 462 340 L 563 382 L 610 190 L 536 141 L 450 112 L 386 95 C 369 135 348 153 320 153 C 292 153 271 135 254 95 Z',
     collarPath: 'M 253 107 C 268 145 289 166 320 166 C 351 166 372 145 387 107 C 368 128 346 137 320 137 C 294 137 272 128 253 107 Z',
-    printArea: { x: 215, y: 228, width: 210, height: 300 },
+    printArea: { x: 185, y: 220, width: 270, height: 260 },
+    templates: {
+      front: '/garments/templates/oversized-front-v1.png',
+      back: '/garments/templates/oversized-back-v1.png',
+    },
   },
   hoodie: {
     id: 'hoodie',
