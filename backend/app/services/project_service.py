@@ -7,8 +7,13 @@ class ProjectService:
     """CRUD operations for design projects."""
 
     @staticmethod
-    async def create(db: AsyncSession, name: str = "Untitled Design", tshirt_color: str = "#FFFFFF") -> Project:
-        project = Project(name=name, tshirt_color=tshirt_color)
+    async def create(
+        db: AsyncSession,
+        name: str = "Untitled Design",
+        tshirt_color: str = "#FFFFFF",
+        garment_type: str = "tshirt",
+    ) -> Project:
+        project = Project(name=name, tshirt_color=tshirt_color, garment_type=garment_type)
         db.add(project)
         await db.commit()
         await db.refresh(project)

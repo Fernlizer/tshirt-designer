@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Canvas as FabricCanvas } from 'fabric';
+import type { GarmentType } from '../lib/garments';
 
 export type Side = 'front' | 'back';
 
@@ -21,6 +22,8 @@ interface EditorState {
   projectId: string | null;
   projectName: string;
   tshirtColor: string;
+  garmentType: GarmentType;
+  showGrid: boolean;
 
   // Images
   uploadedImages: UploadedImage[];
@@ -40,6 +43,8 @@ interface EditorState {
   setProjectId: (id: string | null) => void;
   setProjectName: (name: string) => void;
   setTshirtColor: (color: string) => void;
+  setGarmentType: (type: GarmentType) => void;
+  setShowGrid: (visible: boolean) => void;
   addUploadedImage: (img: UploadedImage) => void;
   removeUploadedImage: (filename: string) => void;
   setUploadedImages: (images: UploadedImage[]) => void;
@@ -56,6 +61,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   projectId: null,
   projectName: 'Untitled Design',
   tshirtColor: '#FFFFFF',
+  garmentType: 'tshirt',
+  showGrid: true,
   uploadedImages: [],
   mockupFront: null,
   mockupBack: null,
@@ -68,6 +75,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setProjectId: (id) => set({ projectId: id }),
   setProjectName: (name) => set({ projectName: name }),
   setTshirtColor: (color) => set({ tshirtColor: color }),
+  setGarmentType: (garmentType) => set({ garmentType }),
+  setShowGrid: (showGrid) => set({ showGrid }),
   addUploadedImage: (img) =>
     set((state) => ({ uploadedImages: [img, ...state.uploadedImages] })),
   removeUploadedImage: (filename) =>

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Literal
 from pydantic import BaseModel
 from app.core.database import get_db
 from app.services.project_service import project_service
@@ -10,18 +11,25 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 class ProjectCreate(BaseModel):
     name: str = "Untitled Design"
     tshirt_color: str = "#FFFFFF"
+    garment_type: Literal["tshirt", "oversized", "hoodie"] = "tshirt"
 
 
 class ProjectUpdate(BaseModel):
     name: str | None = None
     tshirt_color: str | None = None
+    garment_type: Literal["tshirt", "oversized", "hoodie"] | None = None
     front_canvas_json: str | None = None
     back_canvas_json: str | None = None
 
 
 @router.post("")
 async def create_project(body: ProjectCreate, db: AsyncSession = Depends(get_db)):
-    project = await project_service.create(db, name=body.name, tshirt_color=body.tshirt_color)
+    project = await project_service.create(
+        db,
+        name=body.name,
+        tshirt_color=body.tshirt_color,
+        garment_type=body.garment_type,
+    )
     return project.to_dict()
 
 

@@ -1,21 +1,66 @@
 import { useRef, useEffect, useCallback } from 'react';
 import * as fabric from 'fabric';
 import { useEditorStore, type Side } from '../stores/editorStore';
+import { getEditorPrintArea, getPhotoTemplate } from '../lib/garments';
+import { getTintedTemplate } from '../lib/garmentTemplate';
 
 const CANVAS_WIDTH = 500;
 const CANVAS_HEIGHT = 600;
 
-// T-shirt shape points (normalized to canvas size)
-const TSHIRT_PATH = `M 150 80 
-  L 100 120 L 30 160 L 70 260 L 150 220 
-  L 150 520 L 350 520 L 350 220 
-  L 430 260 L 470 160 L 400 120 L 350 80 
-  L 300 50 L 250 70 L 200 50 Z`;
+const createGridGuides = (visible: boolean): fabric.FabricObject[] => {
+  const { x, y, width, height } = getEditorPrintArea(useEditorStore.getState().garmentType);
+  const guides: fabric.FabricObject[] = [
+    new fabric.Rect({
+      left: x,
+      top: y,
+      width,
+      height,
+      fill: 'transparent',
+      stroke: 'rgba(125, 211, 252, 0.65)',
+      strokeDashArray: [5, 5],
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      excludeFromExport: true,
+      visible,
+    }),
+  ];
+
+  for (let column = 1; column < 4; column += 1) {
+    const centerLine = column === 2;
+    guides.push(new fabric.Line([x + (width / 4) * column, y, x + (width / 4) * column, y + height], {
+      stroke: centerLine ? 'rgba(56, 189, 248, 0.95)' : 'rgba(125, 211, 252, 0.4)',
+      strokeDashArray: centerLine ? [7, 4] : [3, 5],
+      strokeWidth: centerLine ? 1.5 : 1,
+      selectable: false,
+      evented: false,
+      excludeFromExport: true,
+      visible,
+    }));
+  }
+
+  for (let row = 1; row < 6; row += 1) {
+    const centerLine = row === 3;
+    guides.push(new fabric.Line([x, y + (height / 6) * row, x + width, y + (height / 6) * row], {
+      stroke: centerLine ? 'rgba(56, 189, 248, 0.95)' : 'rgba(125, 211, 252, 0.4)',
+      strokeDashArray: centerLine ? [7, 4] : [3, 5],
+      strokeWidth: centerLine ? 1.5 : 1,
+      selectable: false,
+      evented: false,
+      excludeFromExport: true,
+      visible,
+    }));
+  }
+
+  return guides;
+};
 
 export function useCanvas(side: Side) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
-  const { setFrontCanvas, setBackCanvas, tshirtColor } = useEditorStore();
+  const templateRef = useRef<fabric.FabricImage | null>(null);
+  const gridRef = useRef<fabric.FabricObject[]>([]);
+  const { setFrontCanvas, setBackCanvas, tshirtColor, showGrid } = useEditorStore();
 
   // Initialize canvas
   useEffect(() => {
@@ -29,18 +74,27 @@ export function useCanvas(side: Side) {
     });
 
     fabricRef.current = canvas;
+    gridRef.current = createGridGuides(useEditorStore.getState().showGrid);
+    gridRef.current.forEach((guide) => canvas.add(guide));
 
-    // Draw T-shirt shape as background
-    const tshirt = new fabric.Path(TSHIRT_PATH, {
-      fill: tshirtColor,
-      stroke: '#cccccc',
-      strokeWidth: 2,
-      selectable: false,
-      evented: false,
-      excludeFromExport: false,
+    const templateUrl = getPhotoTemplate(useEditorStore.getState().garmentType, side);
+    void getTintedTemplate(templateUrl, useEditorStore.getState().tshirtColor).then((tintedUrl) => fabric.FabricImage.fromURL(tintedUrl)).then((template) => {
+      if (fabricRef.current !== canvas) return;
+      template.set({
+        left: 0,
+        top: 0,
+        selectable: false,
+        evented: false,
+        excludeFromExport: true,
+        scaleX: CANVAS_WIDTH / (template.width || CANVAS_WIDTH),
+        scaleY: CANVAS_HEIGHT / (template.height || CANVAS_HEIGHT),
+      });
+      templateRef.current = template;
+      canvas.add(template);
+      canvas.sendObjectToBack(template);
+      gridRef.current.forEach((guide) => canvas.bringObjectToFront(guide));
+      canvas.renderAll();
     });
-    canvas.add(tshirt);
-    canvas.sendObjectToBack(tshirt);
 
     // Store reference
     if (side === 'front') {
@@ -52,23 +106,32 @@ export function useCanvas(side: Side) {
     return () => {
       canvas.dispose();
       fabricRef.current = null;
+      templateRef.current = null;
+      gridRef.current = [];
     };
   }, [side]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update shirt color when it changes
   useEffect(() => {
     const canvas = fabricRef.current;
-    if (!canvas) return;
+    gridRef.current.forEach((guide) => guide.set({ visible: showGrid }));
+    if (showGrid && canvas) gridRef.current.forEach((guide) => canvas.bringObjectToFront(guide));
+    canvas?.renderAll();
+  }, [showGrid]);
 
-    const objects = canvas.getObjects();
-    const tshirt = objects.find(
-      (obj) => obj instanceof fabric.Path && !obj.selectable
-    );
-    if (tshirt) {
-      tshirt.set('fill', tshirtColor);
-      canvas.renderAll();
-    }
-  }, [tshirtColor]);
+  useEffect(() => {
+    const canvas = fabricRef.current;
+    const template = templateRef.current;
+    if (!canvas || !template) return;
+    const templateUrl = getPhotoTemplate(useEditorStore.getState().garmentType, side);
+    let cancelled = false;
+
+    void getTintedTemplate(templateUrl, tshirtColor).then(async (tintedUrl) => {
+      if (cancelled) return;
+      await template.setSrc(tintedUrl);
+      if (!cancelled) canvas.renderAll();
+    });
+    return () => { cancelled = true; };
+  }, [side, tshirtColor]);
 
   const addImage = useCallback(async (imageUrl: string) => {
     const canvas = fabricRef.current;
@@ -94,6 +157,7 @@ export function useCanvas(side: Side) {
       });
 
       canvas.add(img);
+      gridRef.current.forEach((guide) => canvas.bringObjectToFront(guide));
       canvas.setActiveObject(img);
       canvas.renderAll();
     } catch (err) {
@@ -116,6 +180,7 @@ export function useCanvas(side: Side) {
     });
 
     canvas.add(textObj);
+    gridRef.current.forEach((guide) => canvas.bringObjectToFront(guide));
     canvas.setActiveObject(textObj);
     canvas.renderAll();
   }, []);
@@ -126,8 +191,8 @@ export function useCanvas(side: Side) {
 
     const active = canvas.getActiveObjects();
     active.forEach((obj) => {
-      // Don't delete the t-shirt background
-      if (obj instanceof fabric.Path && !obj.selectable) return;
+      // Don't delete the garment template
+      if (!obj.selectable) return;
       canvas.remove(obj);
     });
     canvas.discardActiveObject();
@@ -138,9 +203,9 @@ export function useCanvas(side: Side) {
     const canvas = fabricRef.current;
     if (!canvas) return;
 
-    // Remove all except t-shirt background
+    // Remove all except the garment template
     const objects = canvas.getObjects().filter(
-      (obj) => !(obj instanceof fabric.Path && !obj.selectable)
+      (obj) => obj.selectable
     );
     objects.forEach((obj) => canvas.remove(obj));
     canvas.renderAll();

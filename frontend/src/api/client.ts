@@ -22,8 +22,8 @@ export const deleteImage = async (filename: string) => {
 };
 
 // Projects
-export const createProject = async (name?: string, tshirtColor?: string) => {
-  const { data } = await api.post('/projects', { name, tshirt_color: tshirtColor });
+export const createProject = async (name?: string, tshirtColor?: string, garmentType?: string) => {
+  const { data } = await api.post('/projects', { name, tshirt_color: tshirtColor, garment_type: garmentType });
   return data;
 };
 

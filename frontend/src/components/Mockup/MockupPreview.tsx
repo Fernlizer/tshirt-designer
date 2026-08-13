@@ -1,67 +1,50 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { GARMENTS, getPhotoTemplate } from '../../lib/garments';
+import { exportArtworkOnly } from '../../lib/exportArtwork';
+import { getTintedTemplate } from '../../lib/garmentTemplate';
 import { useEditorStore } from '../../stores/editorStore';
-import { generateMockup } from '../../api/client';
 
 export default function MockupPreview() {
-  const { mockupFront, mockupBack, activeSide, tshirtColor, setMockup, isGeneratingMockup, setIsGeneratingMockup } = useEditorStore();
+  const { activeSide, garmentType, tshirtColor } = useEditorStore();
+  const garment = GARMENTS[garmentType];
+  const templateUrl = getPhotoTemplate(garmentType, activeSide);
+  const [designUrl, setDesignUrl] = useState<string | null>(null);
+  const [tintedTemplateUrl, setTintedTemplateUrl] = useState(templateUrl);
 
-  const handleGenerate = useCallback(async () => {
+  const handlePreview = useCallback(() => {
     const canvas = activeSide === 'front'
       ? useEditorStore.getState().frontCanvas
       : useEditorStore.getState().backCanvas;
-
     if (!canvas) return;
+    setDesignUrl(exportArtworkOnly(canvas));
+  }, [activeSide]);
 
-    setIsGeneratingMockup(true);
-    try {
-      const dataUrl = canvas.toDataURL({ format: 'png', quality: 1 });
-      const b64 = dataUrl.split(',')[1];
+  useEffect(() => {
+    setDesignUrl(null);
+  }, [activeSide, garmentType]);
 
-      const result = await generateMockup(b64, activeSide, tshirtColor);
-      setMockup(activeSide, result.url);
-    } catch (err) {
-      console.error('Mockup generation failed:', err);
-      alert('Mockup generation failed');
-    } finally {
-      setIsGeneratingMockup(false);
-    }
-  }, [activeSide, tshirtColor, setMockup, setIsGeneratingMockup]);
-
-  const currentMockup = activeSide === 'front' ? mockupFront : mockupBack;
+  useEffect(() => {
+    let cancelled = false;
+    void getTintedTemplate(templateUrl, tshirtColor).then((url) => {
+      if (!cancelled) setTintedTemplateUrl(url);
+    });
+    return () => { cancelled = true; };
+  }, [templateUrl, tshirtColor]);
 
   return (
-    <div className="sidebar-section">
-      <h3>🧍 Mockup Preview</h3>
-
-      <button
-        className="btn btn-primary btn-block"
-        onClick={handleGenerate}
-        disabled={isGeneratingMockup}
-        style={{ marginBottom: 12 }}
-      >
-        {isGeneratingMockup ? '⏳ Generating...' : '✨ Generate Mockup'}
+    <section className="mockup-panel">
+      <div className="section-heading mockup-heading">
+        <span>Garment preview</span>
+        <small>{garment.label} · {activeSide}</small>
+      </div>
+      <div className="photo-mockup" aria-label={`${garment.label} ${activeSide} preview`}>
+        <img className="photo-mockup__template" src={tintedTemplateUrl} alt="Blank garment template" />
+        {designUrl && <img className="photo-mockup__artwork" src={designUrl} alt="Your design on the garment" />}
+      </div>
+      <button type="button" className="btn btn-primary btn-block" onClick={handlePreview}>
+        {designUrl ? '↻ Update preview' : '✦ Preview artwork'}
       </button>
-
-      {currentMockup ? (
-        <div className="mockup-container">
-          <img src={currentMockup} alt={`T-shirt ${activeSide} mockup`} />
-          <p style={{ fontSize: 12, color: '#888', marginTop: 8 }}>
-            {activeSide === 'front' ? 'Front' : 'Back'} view
-          </p>
-        </div>
-      ) : (
-        <div style={{
-          textAlign: 'center',
-          padding: 24,
-          color: '#555',
-          fontSize: 13,
-          border: '1px dashed #0f3460',
-          borderRadius: 8,
-        }}>
-          <p style={{ fontSize: 32, marginBottom: 8 }}>👕</p>
-          <p>Design something and click<br />"Generate Mockup" to preview</p>
-        </div>
-      )}
-    </div>
+      <p className="mockup-note">This is the same photorealistic garment template used in the editor. The artwork layer exports without the shirt background.</p>
+    </section>
   );
 }
