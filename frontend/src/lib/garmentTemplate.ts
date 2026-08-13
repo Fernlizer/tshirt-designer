@@ -15,14 +15,17 @@ export async function getTintedTemplate(url: string, color: string): Promise<str
   const context = canvas.getContext('2d');
   if (!context) return url;
 
+  // Apply the chosen color at full strength inside the garment alpha mask first.
+  // The old translucent overlay mixed white template pixels back into dark colors.
   context.drawImage(image, 0, 0);
-  context.globalCompositeOperation = 'source-atop';
+  context.globalCompositeOperation = 'source-in';
   context.fillStyle = color;
-  context.globalAlpha = 0.9;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.globalAlpha = 1;
+
+  // Reapply the photograph with multiply so seams and fabric shadows remain.
   context.globalCompositeOperation = 'multiply';
   context.drawImage(image, 0, 0);
+  context.globalCompositeOperation = 'source-over';
 
   return canvas.toDataURL('image/png');
 }

@@ -21,7 +21,9 @@ export const GARMENTS: Record<GarmentType, GarmentDefinition> = {
     editorPath: 'M 150 80 L 100 120 L 30 160 L 70 260 L 150 220 L 150 520 L 350 520 L 350 220 L 430 260 L 470 160 L 400 120 L 350 80 L 300 50 L 250 70 L 200 50 Z',
     previewPath: 'M 205 110 L 139 151 L 45 204 L 91 355 L 191 304 L 191 658 L 449 658 L 449 304 L 549 355 L 595 204 L 501 151 L 435 110 C 406 143 372 160 320 160 C 268 160 234 143 205 110 Z',
     collarPath: 'M 244 117 C 257 159 284 181 320 181 C 356 181 383 159 396 117 C 371 140 350 149 320 149 C 290 149 269 140 244 117 Z',
-    printArea: { x: 227, y: 223, width: 186, height: 285 },
+    // Deliberately generous: artwork can reach the upper chest and extend toward
+    // the side seams without crossing the collar, sleeves, or bottom hem.
+    printArea: { x: 190, y: 195, width: 260, height: 340 },
     templates: {
       front: '/garments/templates/tshirt-front-v1.png',
       back: '/garments/templates/tshirt-back-v1.png',
