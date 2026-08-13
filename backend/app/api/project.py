@@ -12,12 +12,14 @@ class ProjectCreate(BaseModel):
     name: str = "Untitled Design"
     tshirt_color: str = "#FFFFFF"
     garment_type: Literal["tshirt", "oversized", "hoodie"] = "tshirt"
+    mockup_credit: str = ""
 
 
 class ProjectUpdate(BaseModel):
     name: str | None = None
     tshirt_color: str | None = None
     garment_type: Literal["tshirt", "oversized", "hoodie"] | None = None
+    mockup_credit: str | None = None
     front_canvas_json: str | None = None
     back_canvas_json: str | None = None
 
@@ -29,6 +31,7 @@ async def create_project(body: ProjectCreate, db: AsyncSession = Depends(get_db)
         name=body.name,
         tshirt_color=body.tshirt_color,
         garment_type=body.garment_type,
+        mockup_credit=body.mockup_credit,
     )
     return project.to_dict()
 

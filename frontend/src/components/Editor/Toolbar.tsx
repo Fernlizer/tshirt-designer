@@ -6,7 +6,7 @@ import { exportArtworkOnly } from '../../lib/exportArtwork';
 export default function Toolbar() {
   const {
     getActiveCanvas, activeSide, tshirtColor,
-    projectId, setProjectId, projectName, setProjectName, garmentType,
+    projectId, setProjectId, projectName, setProjectName, garmentType, mockupCredit,
   } = useEditorStore();
   const [saving, setSaving] = useState(false);
 
@@ -56,11 +56,12 @@ export default function Toolbar() {
           name: projectName,
           tshirt_color: tshirtColor,
           garment_type: garmentType,
+          mockup_credit: mockupCredit,
           front_canvas_json: frontJson,
           back_canvas_json: backJson,
         });
       } else {
-        const result = await createProject(projectName, tshirtColor, garmentType);
+        const result = await createProject(projectName, tshirtColor, garmentType, mockupCredit);
         setProjectId(result.id);
         // Save canvas state after creating
         if (result.id) {
@@ -77,7 +78,7 @@ export default function Toolbar() {
     } finally {
       setSaving(false);
     }
-  }, [projectId, projectName, tshirtColor, setProjectId]);
+  }, [projectId, projectName, tshirtColor, garmentType, mockupCredit, setProjectId]);
 
   const handleExport = useCallback(() => {
     const canvas = getActiveCanvas();

@@ -822,6 +822,60 @@ body {
   gap: var(--space-3);
 }
 
+.mockup-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.mockup-side {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.mockup-side__label {
+  color: var(--color-muted);
+  font: 700 0.65rem var(--font-mono);
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.mockup-credit {
+  display: grid;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.mockup-credit small {
+  color: var(--color-subtle);
+  font-weight: 500;
+}
+
+.mockup-credit input {
+  min-width: 0;
+  min-height: 2.35rem;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font: 0.8rem var(--font-body);
+  padding: var(--space-2) var(--space-3);
+}
+
+.mockup-credit input:hover {
+  border-color: var(--color-muted);
+}
+
+.mockup-credit input:focus-visible {
+  border-color: var(--color-focus);
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 .webgl-garment-viewer {
   position: relative;
   min-height: 27rem;
