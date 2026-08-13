@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { GARMENTS, getPhotoTemplate } from '../../lib/garments';
 import { exportArtworkOnly } from '../../lib/exportArtwork';
 import { getTintedTemplate } from '../../lib/garmentTemplate';
+import { getGarmentSurfaceTheme } from '../../lib/garmentSurface';
 import { useEditorStore } from '../../stores/editorStore';
 
 export default function MockupPreview() {
   const { activeSide, garmentType, tshirtColor } = useEditorStore();
   const garment = GARMENTS[garmentType];
   const templateUrl = getPhotoTemplate(garmentType, activeSide);
+  const surfaceTheme = getGarmentSurfaceTheme(tshirtColor);
   const [designUrl, setDesignUrl] = useState<string | null>(null);
   const [tintedTemplateUrl, setTintedTemplateUrl] = useState(templateUrl);
 
@@ -37,7 +39,7 @@ export default function MockupPreview() {
         <span>Garment preview</span>
         <small>{garment.label} · {activeSide}</small>
       </div>
-      <div className="photo-mockup" aria-label={`${garment.label} ${activeSide} preview`}>
+      <div className={`photo-mockup garment-surface ${surfaceTheme}`} aria-label={`${garment.label} ${activeSide} preview`}>
         <img className="photo-mockup__template" src={tintedTemplateUrl} alt="Blank garment template" />
         {designUrl && <img className="photo-mockup__artwork" src={designUrl} alt="Your design on the garment" />}
       </div>

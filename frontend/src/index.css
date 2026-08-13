@@ -634,6 +634,23 @@ body {
   transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
 }
 
+.garment-surface {
+  background-color: var(--surface-dark-base);
+  background-image:
+    radial-gradient(circle at 50% 38%, var(--surface-dark-glow), transparent 58%),
+    repeating-linear-gradient(0deg, transparent 0 1.45rem, var(--surface-dark-rule) 1.5rem),
+    repeating-linear-gradient(90deg, transparent 0 1.45rem, var(--surface-dark-rule) 1.5rem);
+}
+
+.garment-surface--light {
+  background-color: var(--surface-light-base);
+  background-image:
+    radial-gradient(circle at 50% 30%, var(--surface-light-glow), transparent 56%),
+    repeating-linear-gradient(0deg, transparent 0 1.45rem, var(--surface-light-rule) 1.5rem),
+    repeating-linear-gradient(90deg, transparent 0 1.45rem, var(--surface-light-rule) 1.5rem);
+  border-color: var(--surface-light-border);
+}
+
 .canvas-wrapper.is-active {
   opacity: 1;
   pointer-events: auto;
@@ -821,9 +838,10 @@ body {
   overflow: hidden;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-lg);
-  background:
-    radial-gradient(circle at 50% 42%, oklch(28% 0.05 260 / 0.5), transparent 55%),
-    var(--color-canvas);
+}
+
+.photo-mockup.garment-surface {
+  background-size: auto, 1.5rem 1.5rem, 1.5rem 1.5rem;
 }
 
 .photo-mockup__template,
