@@ -12,8 +12,14 @@ class ProjectService:
         name: str = "Untitled Design",
         tshirt_color: str = "#FFFFFF",
         garment_type: str = "tshirt",
+        mockup_credit: str = "",
     ) -> Project:
-        project = Project(name=name, tshirt_color=tshirt_color, garment_type=garment_type)
+        project = Project(
+            name=name,
+            tshirt_color=tshirt_color,
+            garment_type=garment_type,
+            mockup_credit=mockup_credit,
+        )
         db.add(project)
         await db.commit()
         await db.refresh(project)

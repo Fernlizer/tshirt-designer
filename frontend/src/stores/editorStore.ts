@@ -23,6 +23,7 @@ interface EditorState {
   projectName: string;
   tshirtColor: string;
   garmentType: GarmentType;
+  mockupCredit: string;
   showGrid: boolean;
 
   // Images
@@ -44,6 +45,7 @@ interface EditorState {
   setProjectName: (name: string) => void;
   setTshirtColor: (color: string) => void;
   setGarmentType: (type: GarmentType) => void;
+  setMockupCredit: (credit: string) => void;
   setShowGrid: (visible: boolean) => void;
   addUploadedImage: (img: UploadedImage) => void;
   removeUploadedImage: (filename: string) => void;
@@ -62,6 +64,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   projectName: 'Untitled Design',
   tshirtColor: '#FFFFFF',
   garmentType: 'tshirt',
+  mockupCredit: '',
   showGrid: true,
   uploadedImages: [],
   mockupFront: null,
@@ -76,6 +79,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setProjectName: (name) => set({ projectName: name }),
   setTshirtColor: (color) => set({ tshirtColor: color }),
   setGarmentType: (garmentType) => set({ garmentType }),
+  setMockupCredit: (mockupCredit) => set({ mockupCredit }),
   setShowGrid: (showGrid) => set({ showGrid }),
   addUploadedImage: (img) =>
     set((state) => ({ uploadedImages: [img, ...state.uploadedImages] })),

@@ -31,6 +31,7 @@ export default function ProjectLibrary() {
       store.setProjectId(project.id);
       store.setProjectName(project.name);
       store.setTshirtColor(project.tshirt_color);
+      store.setMockupCredit(project.mockup_credit ?? '');
       if (isGarmentType(project.garment_type)) store.setGarmentType(project.garment_type);
       if (project.front_canvas_json && store.frontCanvas) {
         await store.frontCanvas.loadFromJSON(project.front_canvas_json);

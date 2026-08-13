@@ -27,6 +27,21 @@ export default function CanvasGuides() {
     setNotice('Centered and straightened in the print area.');
   }, [garmentType, getActiveCanvas]);
 
+  const handleDelete = useCallback(() => {
+    const canvas = getActiveCanvas();
+    const selected = canvas?.getActiveObjects() ?? [];
+    const deletable = selected.filter((object) => object.selectable);
+    if (!canvas || deletable.length === 0) {
+      setNotice('Select an image or text layer first.');
+      return;
+    }
+
+    deletable.forEach((object) => canvas.remove(object));
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    setNotice('Selected layer deleted. Choose another image to replace it.');
+  }, [getActiveCanvas]);
+
   return (
     <div className="canvas-guides" aria-label="Alignment controls">
       <button
@@ -39,6 +54,9 @@ export default function CanvasGuides() {
       </button>
       <button type="button" className="guide-center" onClick={handleCenter}>
         ◎ Center selected
+      </button>
+      <button type="button" className="guide-delete" onClick={handleDelete}>
+        🗑 Delete selected
       </button>
       {notice && <span className="guide-notice" role="status">{notice}</span>}
     </div>

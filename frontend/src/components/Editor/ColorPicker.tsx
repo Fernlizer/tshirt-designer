@@ -3,7 +3,7 @@ import { useEditorStore } from '../../stores/editorStore';
 
 const TSHIRT_COLORS = [
   { name: 'White', value: '#FFFFFF' },
-  { name: 'Black', value: '#1a1a1a' },
+  { name: 'Black', value: '#080808' },
   { name: 'Navy', value: '#1a2744' },
   { name: 'Red', value: '#c0392b' },
   { name: 'Royal Blue', value: '#2980b9' },

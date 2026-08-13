@@ -33,3 +33,7 @@ async def init_db():
             await conn.execute(
                 text("ALTER TABLE projects ADD COLUMN garment_type VARCHAR(32) NOT NULL DEFAULT 'tshirt'")
             )
+        if "mockup_credit" not in columns:
+            await conn.execute(
+                text("ALTER TABLE projects ADD COLUMN mockup_credit VARCHAR(160) NOT NULL DEFAULT ''")
+            )
