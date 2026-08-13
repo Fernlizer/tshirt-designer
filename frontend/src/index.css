@@ -1,3 +1,6 @@
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4
+ * macrostructure: Workbench · tone: technical studio · theme: Midnight · enrichment: Tier B SVG garment model */
+@import './tokens.css';
 * {
   margin: 0;
   padding: 0;
@@ -375,6 +378,7 @@ body {
 .color-preset {
   width: 32px;
   height: 32px;
+  padding: 0;
   border-radius: 6px;
   border: 2px solid #333;
   cursor: pointer;
@@ -406,4 +410,561 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #1a4a8a;
+}
+
+/* Studio workbench overrides */
+:root {
+  --color-page: oklch(12% 0.025 260);
+  --color-panel: oklch(16% 0.035 260);
+  --color-panel-raised: oklch(20% 0.04 260);
+  --color-canvas: oklch(10% 0.02 260);
+  --color-ink: oklch(94% 0.01 260);
+  --color-muted: oklch(70% 0.025 260);
+  --color-subtle: oklch(50% 0.03 260);
+  --color-rule: oklch(30% 0.06 260);
+  --color-accent: oklch(67% 0.19 260);
+  --color-accent-ink: oklch(16% 0.035 260);
+  --color-focus: oklch(80% 0.14 190);
+  --color-danger: oklch(65% 0.2 20);
+  --color-highlight: oklch(100% 0 0);
+  --color-shadow: oklch(0% 0 0);
+  --font-display: ui-rounded, "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-page);
+  color: var(--color-ink);
+}
+
+.header {
+  min-height: 4.5rem;
+  padding: var(--space-3) var(--space-6);
+  gap: var(--space-4);
+  background: var(--color-panel);
+  border-bottom-color: var(--color-rule);
+}
+
+.header h1 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.header h1::first-letter {
+  color: var(--color-accent);
+}
+
+.header input,
+.color-input {
+  background: var(--color-canvas) !important;
+  border-color: var(--color-rule) !important;
+  color: var(--color-ink) !important;
+  font-family: var(--font-body) !important;
+}
+
+.header-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.main-layout {
+  background: var(--color-page);
+}
+
+.sidebar-left,
+.sidebar-right {
+  width: min(19rem, 23vw);
+  padding: var(--space-5);
+  background: var(--color-panel);
+  border-color: var(--color-rule);
+}
+
+.sidebar-right {
+  width: min(24rem, 28vw);
+}
+
+.sidebar-section,
+.mockup-panel {
+  margin-bottom: var(--space-6);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.section-heading small {
+  color: var(--color-subtle);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.sidebar-section h3 {
+  color: var(--color-muted);
+}
+
+.canvas-area {
+  min-width: 0;
+  padding: var(--space-6);
+  background:
+    radial-gradient(circle at 50% 42%, oklch(22% 0.07 260 / 0.45), transparent 38rem),
+    var(--color-canvas);
+}
+
+.canvas-tabs {
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-1);
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+}
+
+.canvas-tab {
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-5);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-muted);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.canvas-tab:hover,
+.canvas-tab:focus-visible {
+  color: var(--color-ink);
+  background: var(--color-panel-raised);
+}
+
+.canvas-tab.active {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.canvas-stack {
+  position: relative;
+  width: 31.25rem;
+  height: 37.5rem;
+  max-width: 100%;
+}
+
+.canvas-guides {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: 2rem;
+  margin: calc(var(--space-4) * -0.5) 0 var(--space-3);
+}
+
+.guide-toggle,
+.guide-center {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-panel);
+  color: var(--color-muted);
+  cursor: pointer;
+  font: 700 0.72rem var(--font-body);
+}
+
+.guide-toggle.is-active,
+.guide-center:hover {
+  border-color: var(--color-focus);
+  background: oklch(25% 0.07 250);
+  color: var(--color-ink);
+}
+
+.guide-notice {
+  color: var(--color-focus);
+  font-size: 0.7rem;
+}
+
+.canvas-wrapper {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.5rem) scale(0.985);
+  border-color: var(--color-rule);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1.5rem 4rem oklch(0% 0 0 / 0.42);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+
+.canvas-wrapper.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.btn {
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible,
+.canvas-tab:focus-visible,
+.garment-option:focus-visible,
+.project-row:focus-visible,
+.icon-button:focus-visible,
+.upload-area:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.btn:disabled,
+.project-row:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-focus);
+}
+
+.btn-secondary {
+  background: var(--color-panel-raised);
+  color: var(--color-ink);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-rule);
+  color: var(--color-ink);
+}
+
+.upload-area {
+  padding: var(--space-5);
+  border-color: var(--color-rule);
+  border-radius: var(--radius-md);
+  background: oklch(12% 0.025 260 / 0.55);
+}
+
+.upload-area:hover {
+  border-color: var(--color-accent);
+  background: oklch(20% 0.05 260 / 0.7);
+}
+
+.upload-area p,
+.empty-state,
+.mockup-note {
+  color: var(--color-muted);
+}
+
+.image-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.image-thumb,
+.image-thumb:hover {
+  border-color: var(--color-rule);
+  border-radius: var(--radius-sm);
+}
+
+.image-thumb:hover {
+  border-color: var(--color-accent);
+}
+
+.garment-options,
+.project-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.garment-option,
+.project-row {
+  width: 100%;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.garment-option {
+  display: grid;
+  gap: 0.15rem;
+  padding: var(--space-3);
+}
+
+.garment-option strong {
+  font-size: 0.82rem;
+}
+
+.garment-option span,
+.project-row small {
+  color: var(--color-muted);
+  font-size: 0.7rem;
+}
+
+.garment-option:hover,
+.project-row:hover {
+  border-color: var(--color-focus);
+  transform: translateX(2px);
+}
+
+.garment-option.is-active {
+  border-color: var(--color-accent);
+  background: oklch(25% 0.08 260);
+}
+
+.garment-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.project-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.project-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon-button {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.mockup-panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.webgl-garment-viewer {
+  position: relative;
+  min-height: 27rem;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  background: var(--color-canvas);
+  touch-action: none;
+}
+
+.photo-mockup {
+  position: relative;
+  aspect-ratio: 5 / 6;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 50% 42%, oklch(28% 0.05 260 / 0.5), transparent 55%),
+    var(--color-canvas);
+}
+
+.photo-mockup__template,
+.photo-mockup__artwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.photo-mockup__template {
+  filter: drop-shadow(0 1.2rem 1.4rem oklch(0% 0 0 / 0.38));
+}
+
+.photo-mockup__artwork {
+  pointer-events: none;
+}
+
+.webgl-loading {
+  display: grid;
+  min-height: 27rem;
+  place-items: center;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  background: var(--color-canvas);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.webgl-garment-viewer canvas {
+  display: block;
+  width: 100% !important;
+  height: 27rem !important;
+  cursor: grab;
+}
+
+.webgl-garment-viewer canvas:active {
+  cursor: grabbing;
+}
+
+.viewer-badge {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: var(--color-panel);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.mockup-heading {
+  margin-bottom: 0;
+}
+
+.garment-stage {
+  display: grid;
+  min-height: 24rem;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 50% 34%, oklch(29% 0.1 260 / 0.5), transparent 55%),
+    var(--color-canvas);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.garment-stage:active {
+  cursor: grabbing;
+}
+
+.garment-model {
+  width: min(100%, 23rem);
+  padding: var(--space-2);
+  perspective: 62rem;
+}
+
+.garment-model svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+  transform-origin: 50% 56%;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.garment-shadow { fill: oklch(0% 0 0 / 0.42); }
+.garment-body { stroke: oklch(91% 0.01 260 / 0.35); stroke-width: 2.5; }
+.garment-seam { fill: none; stroke: oklch(100% 0 0 / 0.22); stroke-width: 1.4; }
+.garment-collar { fill: oklch(0% 0 0 / 0.18); stroke: oklch(100% 0 0 / 0.26); stroke-width: 1.5; }
+.garment-fold { fill: none; stroke: oklch(0% 0 0 / 0.18); stroke-width: 3; stroke-linecap: round; }
+
+.drag-hint {
+  align-self: end;
+  margin-bottom: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: var(--color-panel);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.mockup-note {
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 60rem) {
+  .garment-stage:hover .garment-model svg { transform: rotateX(calc(var(--rotate-x) - 1deg)) rotateY(calc(var(--rotate-y) + 1deg)) translateY(-2px); }
+}
+
+@media (max-width: 59.99rem) {
+  body { height: auto; min-height: 100dvh; overflow: auto; }
+  #root, .app { height: auto; min-height: 100dvh; }
+  .header { align-items: flex-start; flex-wrap: wrap; padding: var(--space-4); }
+  .header-actions { width: 100%; justify-content: flex-start; }
+  .main-layout { display: grid; grid-template-columns: minmax(0, 1fr); overflow: visible; }
+  .sidebar-left, .sidebar-right { width: 100%; border: 0; border-bottom: 1px solid var(--color-rule); }
+  .sidebar-left { order: 2; }
+  .canvas-area { order: 1; min-height: 42rem; padding: var(--space-4); }
+  .sidebar-right { order: 3; }
+}
+
+@media (max-width: 34rem) {
+  .header h1 { font-size: 1rem; }
+  .header input { width: min(100%, 13rem) !important; }
+  .header-actions { gap: var(--space-1); }
+  .btn { padding-inline: var(--space-3); font-size: 0.75rem; }
+  .canvas-stack { width: 100%; height: min(37.5rem, calc(100vw * 1.2)); }
+  .canvas-wrapper { transform-origin: top left; }
+  .canvas-wrapper canvas { max-width: 100%; height: auto !important; }
+  .garment-stage { min-height: 20rem; }
+  .webgl-garment-viewer,
+  .webgl-garment-viewer canvas { min-height: 23rem; height: 23rem !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
 }

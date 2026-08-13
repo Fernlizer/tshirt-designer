@@ -1,0 +1,33 @@
+/* Runtime design tokens for the Vite application. */
+:root {
+  --color-page: oklch(12% 0.025 260);
+  --color-panel: oklch(16% 0.035 260);
+  --color-panel-raised: oklch(20% 0.04 260);
+  --color-canvas: oklch(10% 0.02 260);
+  --color-ink: oklch(94% 0.01 260);
+  --color-muted: oklch(70% 0.025 260);
+  --color-subtle: oklch(50% 0.03 260);
+  --color-rule: oklch(30% 0.06 260);
+  --color-accent: oklch(67% 0.19 260);
+  --color-accent-ink: oklch(16% 0.035 260);
+  --color-focus: oklch(80% 0.14 190);
+  --color-danger: oklch(65% 0.2 20);
+  --color-highlight: oklch(100% 0 0);
+  --color-shadow: oklch(0% 0 0);
+  --font-display: ui-rounded, "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+}

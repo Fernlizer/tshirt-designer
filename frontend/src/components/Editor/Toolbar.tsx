@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useEditorStore } from '../../stores/editorStore';
 import { updateProject, createProject } from '../../api/client';
+import { exportArtworkOnly } from '../../lib/exportArtwork';
 
 export default function Toolbar() {
   const {
     getActiveCanvas, activeSide, tshirtColor,
-    projectId, setProjectId, projectName, setProjectName,
+    projectId, setProjectId, projectName, setProjectName, garmentType,
   } = useEditorStore();
   const [saving, setSaving] = useState(false);
 
@@ -54,11 +55,12 @@ export default function Toolbar() {
         await updateProject(projectId, {
           name: projectName,
           tshirt_color: tshirtColor,
+          garment_type: garmentType,
           front_canvas_json: frontJson,
           back_canvas_json: backJson,
         });
       } else {
-        const result = await createProject(projectName, tshirtColor);
+        const result = await createProject(projectName, tshirtColor, garmentType);
         setProjectId(result.id);
         // Save canvas state after creating
         if (result.id) {
@@ -81,7 +83,7 @@ export default function Toolbar() {
     const canvas = getActiveCanvas();
     if (!canvas) return;
 
-    const dataUrl = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+    const dataUrl = exportArtworkOnly(canvas);
     const link = document.createElement('a');
     link.download = `tshirt-${activeSide}.png`;
     link.href = dataUrl;

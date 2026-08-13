@@ -1,3 +1,4 @@
+from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
@@ -25,3 +26,10 @@ async def get_db():
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        columns = await conn.run_sync(
+            lambda sync_conn: {column["name"] for column in inspect(sync_conn).get_columns("projects")}
+        )
+        if "garment_type" not in columns:
+            await conn.execute(
+                text("ALTER TABLE projects ADD COLUMN garment_type VARCHAR(32) NOT NULL DEFAULT 'tshirt'")
+            )
