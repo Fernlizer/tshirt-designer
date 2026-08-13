@@ -45,11 +45,16 @@ export const GARMENTS: Record<GarmentType, GarmentDefinition> = {
   hoodie: {
     id: 'hoodie',
     label: 'Hoodie',
-    description: 'Pullover · front pocket',
+    description: 'Pullover · hood · kangaroo pocket',
     editorPath: 'M 165 125 L 112 145 L 45 190 L 80 305 L 158 270 L 158 530 L 342 530 L 342 270 L 420 305 L 455 190 L 388 145 L 335 125 L 310 55 L 250 35 L 190 55 Z',
     previewPath: 'M 218 165 L 143 180 L 52 238 L 97 408 L 190 365 L 190 680 L 450 680 L 450 365 L 543 408 L 588 238 L 497 180 L 422 165 L 402 76 C 380 39 350 22 320 22 C 290 22 260 39 238 76 Z',
     collarPath: 'M 238 76 C 250 144 278 181 320 181 C 362 181 390 144 402 76 C 371 102 352 114 320 114 C 288 114 269 102 238 76 Z',
-    printArea: { x: 229, y: 246, width: 182, height: 245 },
+    // Keep artwork on the clear chest panel: below the hood and above the pocket.
+    printArea: { x: 195, y: 215, width: 250, height: 185 },
+    templates: {
+      front: '/garments/templates/hoodie-front-v1.png',
+      back: '/garments/templates/hoodie-back-v1.png',
+    },
   },
 };
 
