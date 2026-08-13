@@ -1,0 +1,132 @@
+import { useState, useCallback } from 'react';
+import { useEditorStore } from '../../stores/editorStore';
+import { updateProject, createProject } from '../../api/client';
+
+export default function Toolbar() {
+  const {
+    getActiveCanvas, activeSide, tshirtColor,
+    projectId, setProjectId, projectName, setProjectName,
+  } = useEditorStore();
+  const [saving, setSaving] = useState(false);
+
+  const handleAddText = useCallback(() => {
+    const canvas = getActiveCanvas();
+    if (!canvas) return;
+
+    import('fabric').then((fabric) => {
+      const text = new fabric.FabricText('Your Text', {
+        left: 250,
+        top: 250,
+        originX: 'center',
+        originY: 'center',
+        fontSize: 32,
+        fill: '#000000',
+        fontFamily: 'Arial',
+      });
+      canvas.add(text);
+      canvas.setActiveObject(text);
+      canvas.renderAll();
+    });
+  }, [getActiveCanvas]);
+
+  const handleDeleteSelected = useCallback(() => {
+    const canvas = getActiveCanvas();
+    if (!canvas) return;
+
+    const active = canvas.getActiveObjects();
+    active.forEach((obj) => {
+      if (!obj.selectable) return;
+      canvas.remove(obj);
+    });
+    canvas.discardActiveObject();
+    canvas.renderAll();
+  }, [getActiveCanvas]);
+
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    try {
+      const frontCanvas = useEditorStore.getState().frontCanvas;
+      const backCanvas = useEditorStore.getState().backCanvas;
+      const frontJson = frontCanvas ? JSON.stringify(frontCanvas.toJSON()) : null;
+      const backJson = backCanvas ? JSON.stringify(backCanvas.toJSON()) : null;
+
+      if (projectId) {
+        await updateProject(projectId, {
+          name: projectName,
+          tshirt_color: tshirtColor,
+          front_canvas_json: frontJson,
+          back_canvas_json: backJson,
+        });
+      } else {
+        const result = await createProject(projectName, tshirtColor);
+        setProjectId(result.id);
+        // Save canvas state after creating
+        if (result.id) {
+          await updateProject(result.id, {
+            front_canvas_json: frontJson,
+            back_canvas_json: backJson,
+          });
+        }
+      }
+      alert('Project saved!');
+    } catch (err) {
+      console.error('Save failed:', err);
+      alert('Save failed');
+    } finally {
+      setSaving(false);
+    }
+  }, [projectId, projectName, tshirtColor, setProjectId]);
+
+  const handleExport = useCallback(() => {
+    const canvas = getActiveCanvas();
+    if (!canvas) return;
+
+    const dataUrl = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+    const link = document.createElement('a');
+    link.download = `tshirt-${activeSide}.png`;
+    link.href = dataUrl;
+    link.click();
+  }, [getActiveCanvas, activeSide]);
+
+  return (
+    <div className="header">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <h1>👕 T-Shirt Studio</h1>
+        <input
+          type="text"
+          value={projectName}
+          onChange={(e) => setProjectName(e.target.value)}
+          style={{
+            background: '#0a0a1a',
+            border: '1px solid #0f3460',
+            color: '#eee',
+            padding: '4px 8px',
+            borderRadius: 4,
+            fontSize: 14,
+            width: 200,
+          }}
+          placeholder="Project name"
+        />
+      </div>
+
+      <div className="header-actions">
+        <button className="btn btn-secondary" onClick={handleAddText}>
+          ✏️ Text
+        </button>
+        <button className="btn btn-secondary" onClick={handleDeleteSelected}>
+          🗑️ Delete
+        </button>
+        <button className="btn btn-secondary" onClick={handleExport}>
+          📤 Export PNG
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? '⏳ Saving...' : '💾 Save'}
+        </button>
+      </div>
+    </div>
+  );
+}

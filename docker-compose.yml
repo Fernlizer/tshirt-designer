@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./backend
+    container_name: tshirt-backend
+    ports:
+      - "9004:9004"
+    volumes:
+      - ./backend:/app
+      - backend-uploads:/app/uploads
+      - backend-mockups:/app/mockups
+      - backend-data:/app/data
+    environment:
+      - TSHIRT_DEBUG=true
+      - TSHIRT_CORS_ORIGINS=["http://localhost:9005","http://localhost:3000"]
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: tshirt-frontend
+    ports:
+      - "9005:9005"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-uploads:
+  backend-mockups:
+  backend-data:
