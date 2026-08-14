@@ -22,13 +22,17 @@ export const deleteImage = async (filename: string) => {
 };
 
 // Projects
-export const createProject = async (name?: string, tshirtColor?: string, garmentType?: string, mockupCredit?: string) => {
-  const { data } = await api.post('/projects', {
-    name,
-    tshirt_color: tshirtColor,
-    garment_type: garmentType,
-    mockup_credit: mockupCredit,
-  });
+export interface ProjectPayload {
+  name: string;
+  tshirt_color: string;
+  garment_type: string;
+  mockup_credit: string;
+  front_canvas_json: string | null;
+  back_canvas_json: string | null;
+}
+
+export const createProject = async (project: ProjectPayload) => {
+  const { data } = await api.post('/projects', project);
   return data;
 };
 
@@ -42,7 +46,7 @@ export const getProject = async (id: string) => {
   return data;
 };
 
-export const updateProject = async (id: string, updates: Record<string, unknown>) => {
+export const updateProject = async (id: string, updates: ProjectPayload) => {
   const { data } = await api.put(`/projects/${id}`, updates);
   return data;
 };

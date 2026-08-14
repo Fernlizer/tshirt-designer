@@ -13,6 +13,8 @@ class ProjectCreate(BaseModel):
     tshirt_color: str = "#FFFFFF"
     garment_type: Literal["tshirt", "oversized", "hoodie"] = "tshirt"
     mockup_credit: str = ""
+    front_canvas_json: str | None = None
+    back_canvas_json: str | None = None
 
 
 class ProjectUpdate(BaseModel):
@@ -32,6 +34,8 @@ async def create_project(body: ProjectCreate, db: AsyncSession = Depends(get_db)
         tshirt_color=body.tshirt_color,
         garment_type=body.garment_type,
         mockup_credit=body.mockup_credit,
+        front_canvas_json=body.front_canvas_json,
+        back_canvas_json=body.back_canvas_json,
     )
     return project.to_dict()
 

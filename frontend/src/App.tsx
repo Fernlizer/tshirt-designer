@@ -7,6 +7,7 @@ import ColorPicker from './components/Editor/ColorPicker';
 import GarmentPicker from './components/Editor/GarmentPicker';
 import MockupPreview from './components/Mockup/MockupPreview';
 import ProjectLibrary from './components/Editor/ProjectLibrary';
+import TextAttributes from './components/Editor/TextAttributes';
 import { useEditorStore } from './stores/editorStore';
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
 
         {/* Right sidebar: Mockup */}
         <div className="sidebar-right">
+          <TextAttributes />
           <MockupPreview />
         </div>
       </div>

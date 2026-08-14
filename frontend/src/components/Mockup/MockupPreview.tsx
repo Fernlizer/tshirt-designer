@@ -5,6 +5,7 @@ import { exportCombinedMockup } from '../../lib/exportMockup';
 import { getTintedTemplate } from '../../lib/garmentTemplate';
 import { getGarmentSurfaceTheme } from '../../lib/garmentSurface';
 import { useEditorStore, type Side } from '../../stores/editorStore';
+import { useFeedback } from '../Feedback/FeedbackProvider';
 
 type SideUrls = Record<Side, string | null>;
 
@@ -20,6 +21,7 @@ export default function MockupPreview() {
     back: getPhotoTemplate(garmentType, 'back'),
   });
   const [isExporting, setIsExporting] = useState(false);
+  const { notify } = useFeedback();
 
   const handlePreview = useCallback(() => {
     const { frontCanvas, backCanvas } = useEditorStore.getState();
@@ -46,11 +48,11 @@ export default function MockupPreview() {
       link.click();
     } catch (error) {
       console.error('Failed to export combined mockup:', error);
-      alert('Could not export the combined mockup. Please try again.');
+      notify({ tone: 'error', title: 'Could not export mockup', message: 'Please try again.' });
     } finally {
       setIsExporting(false);
     }
-  }, [garmentType, mockupCredit, tshirtColor]);
+  }, [garmentType, mockupCredit, tshirtColor, notify]);
 
   useEffect(() => {
     setDesignUrls(emptySideUrls);
