@@ -1,11 +1,13 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useEditorStore } from '../../stores/editorStore';
 import { uploadImage, listImages, deleteImage } from '../../api/client';
+import { useFeedback } from '../Feedback/FeedbackProvider';
 
 export default function ImageUploader() {
   const fileRef = useRef<HTMLInputElement>(null);
   const { uploadedImages, addUploadedImage, removeUploadedImage, setUploadedImages, getActiveCanvas } = useEditorStore();
   const [uploading, setUploading] = useState(false);
+  const { notify } = useFeedback();
 
   // Load existing images on mount
   useEffect(() => {
@@ -24,12 +26,12 @@ export default function ImageUploader() {
       addUploadedImage(result);
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('Upload failed. Please check file size and format.');
+      notify({ tone: 'error', title: 'Upload failed', message: 'Use PNG, JPG, SVG, or WebP up to 10 MB.' });
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';
     }
-  }, [addUploadedImage]);
+  }, [addUploadedImage, notify]);
 
   const handleAddToCanvas = useCallback((url: string) => {
     const canvas = getActiveCanvas();

@@ -24,6 +24,8 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    environment:
+      - VITE_API_PROXY_TARGET=http://backend:9004
     restart: unless-stopped
 
 volumes:

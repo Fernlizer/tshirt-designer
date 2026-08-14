@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useEditorStore } from '../../stores/editorStore';
-import { updateProject, createProject } from '../../api/client';
+import { updateProject, createProject, type ProjectPayload } from '../../api/client';
 import { exportArtworkOnly } from '../../lib/exportArtwork';
+import { useFeedback } from '../Feedback/FeedbackProvider';
 
 export default function Toolbar() {
   const {
@@ -9,13 +10,14 @@ export default function Toolbar() {
     projectId, setProjectId, projectName, setProjectName, garmentType, mockupCredit,
   } = useEditorStore();
   const [saving, setSaving] = useState(false);
+  const { notify } = useFeedback();
 
   const handleAddText = useCallback(() => {
     const canvas = getActiveCanvas();
     if (!canvas) return;
 
     import('fabric').then((fabric) => {
-      const text = new fabric.FabricText('Your Text', {
+      const text = new fabric.IText('Your Text', {
         left: 250,
         top: 250,
         originX: 'center',
@@ -23,6 +25,7 @@ export default function Toolbar() {
         fontSize: 32,
         fill: '#000000',
         fontFamily: 'Arial',
+        editable: true,
       });
       canvas.add(text);
       canvas.setActiveObject(text);
@@ -51,34 +54,30 @@ export default function Toolbar() {
       const frontJson = frontCanvas ? JSON.stringify(frontCanvas.toJSON()) : null;
       const backJson = backCanvas ? JSON.stringify(backCanvas.toJSON()) : null;
 
+      const project: ProjectPayload = {
+        name: projectName.trim() || 'Untitled Design',
+        tshirt_color: tshirtColor,
+        garment_type: garmentType,
+        mockup_credit: mockupCredit,
+        front_canvas_json: frontJson,
+        back_canvas_json: backJson,
+      };
+
       if (projectId) {
-        await updateProject(projectId, {
-          name: projectName,
-          tshirt_color: tshirtColor,
-          garment_type: garmentType,
-          mockup_credit: mockupCredit,
-          front_canvas_json: frontJson,
-          back_canvas_json: backJson,
-        });
+        await updateProject(projectId, project);
       } else {
-        const result = await createProject(projectName, tshirtColor, garmentType, mockupCredit);
+        const result = await createProject(project);
         setProjectId(result.id);
-        // Save canvas state after creating
-        if (result.id) {
-          await updateProject(result.id, {
-            front_canvas_json: frontJson,
-            back_canvas_json: backJson,
-          });
-        }
       }
-      alert('Project saved!');
+      window.dispatchEvent(new Event('projects:changed'));
+      notify({ tone: 'success', title: 'Project saved', message: 'Your front and back artwork are safely stored.' });
     } catch (err) {
       console.error('Save failed:', err);
-      alert('Save failed');
+      notify({ tone: 'error', title: 'Could not save project', message: 'Check the backend connection and try again.' });
     } finally {
       setSaving(false);
     }
-  }, [projectId, projectName, tshirtColor, garmentType, mockupCredit, setProjectId]);
+  }, [projectId, projectName, tshirtColor, garmentType, mockupCredit, setProjectId, notify]);
 
   const handleExport = useCallback(() => {
     const canvas = getActiveCanvas();

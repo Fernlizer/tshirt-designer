@@ -188,7 +188,7 @@ export function useCanvas(side: Side) {
     const canvas = fabricRef.current;
     if (!canvas) return;
 
-    const textObj = new fabric.FabricText(text, {
+    const textObj = new fabric.IText(text, {
       left: CANVAS_WIDTH / 2,
       top: CANVAS_HEIGHT / 2 - 50,
       originX: 'center',
@@ -196,6 +196,7 @@ export function useCanvas(side: Side) {
       fontSize: 32,
       fill: '#000000',
       fontFamily: 'Arial',
+      editable: true,
     });
 
     canvas.add(textObj);

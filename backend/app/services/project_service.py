@@ -13,12 +13,16 @@ class ProjectService:
         tshirt_color: str = "#FFFFFF",
         garment_type: str = "tshirt",
         mockup_credit: str = "",
+        front_canvas_json: str | None = None,
+        back_canvas_json: str | None = None,
     ) -> Project:
         project = Project(
             name=name,
             tshirt_color=tshirt_color,
             garment_type=garment_type,
             mockup_credit=mockup_credit,
+            front_canvas_json=front_canvas_json,
+            back_canvas_json=back_canvas_json,
         )
         db.add(project)
         await db.commit()
