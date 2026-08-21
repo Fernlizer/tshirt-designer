@@ -10,8 +10,11 @@ services:
       - backend-mockups:/app/mockups
       - backend-data:/app/data
     environment:
-      - TSHIRT_DEBUG=true
+      - TSHIRT_DEBUG=${TSHIRT_DEBUG:-true}
       - TSHIRT_CORS_ORIGINS=["http://localhost:9005","http://localhost:3000"]
+      - TSHIRT_REQUIRE_TURNSTILE=${TSHIRT_REQUIRE_TURNSTILE:-false}
+      - TSHIRT_TURNSTILE_SITE_KEY=${TSHIRT_TURNSTILE_SITE_KEY:-}
+      - TSHIRT_TURNSTILE_SECRET=${TSHIRT_TURNSTILE_SECRET:-}
     restart: unless-stopped
 
   frontend:

@@ -1,12 +1,13 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useEditorStore } from '../../stores/editorStore';
-import { uploadImage, listImages, deleteImage } from '../../api/client';
+import { uploadImage, listImages, deleteImage, removeImageBackground } from '../../api/client';
 import { useFeedback } from '../Feedback/FeedbackProvider';
 
 export default function ImageUploader() {
   const fileRef = useRef<HTMLInputElement>(null);
   const { uploadedImages, addUploadedImage, removeUploadedImage, setUploadedImages, getActiveCanvas } = useEditorStore();
   const [uploading, setUploading] = useState(false);
+  const [removingBackground, setRemovingBackground] = useState<string | null>(null);
   const { notify } = useFeedback();
 
   // Load existing images on mount
@@ -71,6 +72,20 @@ export default function ImageUploader() {
     }
   }, [removeUploadedImage]);
 
+  const handleRemoveBackground = useCallback(async (filename: string) => {
+    setRemovingBackground(filename);
+    try {
+      const result = await removeImageBackground(filename);
+      addUploadedImage(result);
+      notify({ tone: 'success', title: 'Background removed', message: 'A transparent PNG was added to your images.' });
+    } catch (error) {
+      console.error('Background removal failed:', error);
+      notify({ tone: 'error', title: 'Could not remove background', message: 'Use an image uploaded in this session and try again later.' });
+    } finally {
+      setRemovingBackground(null);
+    }
+  }, [addUploadedImage, notify]);
+
   return (
     <div className="sidebar-section">
       <h3>📤 Images</h3>
@@ -116,6 +131,14 @@ export default function ImageUploader() {
                 title="Delete image"
               >
                 ✕
+              </button>
+              <button
+                className="remove-background-btn"
+                onClick={(event) => { event.stopPropagation(); void handleRemoveBackground(img.filename); }}
+                disabled={removingBackground === img.filename}
+                title="Remove background"
+              >
+                {removingBackground === img.filename ? '…' : '✦'}
               </button>
             </div>
           ))}

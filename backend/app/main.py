@@ -6,7 +6,7 @@ from pathlib import Path
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api import upload, project, mockup
+from app.api import upload, project, mockup, security
 
 
 @asynccontextmanager
@@ -42,6 +42,7 @@ app.mount("/api/mockups", StaticFiles(directory=str(settings.mockup_dir)), name=
 app.include_router(upload.router)
 app.include_router(project.router)
 app.include_router(mockup.router)
+app.include_router(security.router)
 
 
 @app.get("/api/health")

@@ -10,9 +10,15 @@ import ProjectLibrary from './components/Editor/ProjectLibrary';
 import TextAttributes from './components/Editor/TextAttributes';
 import PrintPreflight from './components/Editor/PrintPreflight';
 import { useEditorStore } from './stores/editorStore';
+import { useEffect } from 'react';
+import { startEditorSession } from './api/client';
 
 export default function App() {
   const activeSide = useEditorStore((s) => s.activeSide);
+
+  useEffect(() => {
+    void startEditorSession().catch((error) => console.error('Could not start editor session:', error));
+  }, []);
 
   return (
     <div className="app">
