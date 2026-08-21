@@ -243,6 +243,22 @@ body {
   font-size: 12px;
 }
 
+.remove-background-btn {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #5b5cf0;
+  border-radius: 50%;
+  background: #15163a;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.remove-background-btn:disabled { cursor: wait; opacity: 0.65; }
+
 .image-thumb:hover .delete-btn {
   display: flex;
 }

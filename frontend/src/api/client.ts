@@ -2,7 +2,52 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: '/api',
+  withCredentials: true,
 });
+
+let editorCsrfToken: string | null = null;
+let turnstileSiteKey: string | null = null;
+
+api.interceptors.request.use((config) => {
+  if (editorCsrfToken) config.headers.set('X-Editor-CSRF', editorCsrfToken);
+  return config;
+});
+
+export const startEditorSession = async () => {
+  const { data } = await api.post('/security/editor-session');
+  editorCsrfToken = data.csrf_token;
+  turnstileSiteKey = data.turnstile_site_key ?? null;
+  return data;
+};
+
+declare global { interface Window { turnstile?: { render: (container: HTMLElement, options: Record<string, unknown>) => string; execute: (widgetId: string) => void; }; } }
+
+const getTurnstileToken = async (): Promise<string | undefined> => {
+  if (!turnstileSiteKey) return undefined;
+  if (!window.turnstile) {
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Could not load bot protection'));
+      document.head.append(script);
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const container = document.createElement('div');
+    container.style.display = 'none';
+    document.body.append(container);
+    const cleanup = () => container.remove();
+    const widgetId = window.turnstile!.render(container, {
+      sitekey: turnstileSiteKey,
+      size: 'invisible',
+      callback: (token: string) => { cleanup(); resolve(token); },
+      'error-callback': () => { cleanup(); reject(new Error('Bot protection failed')); },
+    });
+    window.turnstile!.execute(widgetId);
+  });
+};
 
 // Upload
 export const uploadImage = async (file: File) => {
@@ -19,6 +64,12 @@ export const listImages = async () => {
 
 export const deleteImage = async (filename: string) => {
   await api.delete(`/images/${filename}`);
+};
+
+export const removeImageBackground = async (filename: string) => {
+  const turnstileToken = await getTurnstileToken();
+  const { data } = await api.post('/images/remove-background', { filename, turnstile_token: turnstileToken });
+  return data;
 };
 
 // Projects
