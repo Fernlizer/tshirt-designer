@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { GARMENTS, getPhotoTemplate } from '../../lib/garments';
 import { exportArtworkOnly } from '../../lib/exportArtwork';
 import { exportCombinedMockup } from '../../lib/exportMockup';
+import { hasPrintPlacementErrors, runPrintPreflight } from '../../lib/printPreflight';
 import { getTintedTemplate } from '../../lib/garmentTemplate';
 import { getGarmentSurfaceTheme } from '../../lib/garmentSurface';
 import { useEditorStore, type Side } from '../../stores/editorStore';
@@ -35,6 +36,13 @@ export default function MockupPreview() {
     setIsExporting(true);
     try {
       const { frontCanvas, backCanvas } = useEditorStore.getState();
+      const hasUnsafePlacement = [frontCanvas, backCanvas].some((canvas) =>
+        canvas && hasPrintPlacementErrors(runPrintPreflight(canvas, garmentType)),
+      );
+      if (hasUnsafePlacement) {
+        notify({ tone: 'error', title: 'Fix print placement before export', message: 'Open Print readiness on the affected side to fit layers inside the safe area.' });
+        return;
+      }
       const dataUrl = await exportCombinedMockup({
         garmentType,
         tshirtColor,
